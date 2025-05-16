@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Home</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Vuetify CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/vuetify@2.6.15/dist/vuetify.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/@mdi/font@5.x/css/materialdesignicons.min.css" rel="stylesheet">
+</head>
+<body>
+
+<div id="app">
+  <v-app>
+    <!-- Barra superior -->
+    <v-app-bar app color="blue darken-3" dark>
+      <v-app-bar-nav-icon @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
+      <v-toolbar-title>Dashboard</v-toolbar-title>
+    </v-app-bar>
+
+    <!-- Drawer lateral -->
+    <v-navigation-drawer app v-model="drawer" color="blue darken-3" dark>
+      <v-list dense>
+        <v-list-item>
+          <v-list-item-content>
+            <v-list-item-title class="title white--text font-weight-bold text-h6">
+              Systock
+            </v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
+
+        <v-divider class="white"></v-divider>
+
+        <v-list-item link @click="goTo('home.html')" class="pa-3">
+          <v-list-item-icon><v-icon class="mr-3">mdi-home</v-icon></v-list-item-icon>
+          <v-list-item-title>Home</v-list-item-title>
+        </v-list-item>
+
+        <v-list-item link @click="goTo('listagem.html')" class="pa-3">
+          <v-list-item-icon><v-icon class="mr-3">mdi-format-list-bulleted</v-icon></v-list-item-icon>
+          <v-list-item-title>Listagem</v-list-item-title>
+        </v-list-item>
+
+        <v-list-item link @click="goTo('users.html')" class="pa-3">
+          <v-list-item-icon><v-icon class="mr-3">mdi-account-plus</v-icon></v-list-item-icon>
+          <v-list-item-title>Cadastro</v-list-item-title>
+        </v-list-item>
+      </v-list>
+
+      <!-- Rodapé do menu (opcional) -->
+      <v-spacer></v-spacer>
+      <v-divider class="white"></v-divider>
+      <v-list-item class="pa-3">
+        <v-list-item-content>
+          <v-list-item-title class="white--text text-caption">© 2025 Crud Systock</v-list-item-title>
+        </v-list-item-content>
+      </v-list-item>
+    </v-navigation-drawer>
+
+    <!-- Conteúdo principal -->
+    <v-main>
+        <div style="width: 100%; text-align: center; margin-top: 20px; margin-bottom: 16px;">
+        <img src="img/systock_cover.jpeg"
+            alt="Banner"
+            style="max-width: 100%; height: auto;">
+        </div>
+
+        <v-container fluid class="d-flex justify-center" style="margin-top: 16px;">
+            <v-card class="elevation-12 pa-6" max-width="600">
+                <v-card-title class="headline font-weight-bold justify-center">
+                Bem-vindo ao Systock
+                </v-card-title>
+
+                <v-card-subtitle class="text-center mb-4">
+                </br>
+                    Solução para problemas de estoque, compras e distribuição de produtos, das empresas de varejo, distribuidores e indústrias.
+                </v-card-subtitle>
+
+                <v-card-actions class="justify-center mt-4">
+                <v-btn color="primary" href="users.html">Cadastrar Usuário</v-btn>
+                <v-btn outlined color="secondary" href="listagem.html">Listagem</v-btn>
+                </v-card-actions>
+            </v-card>
+        </v-container>
+    </v-main>
+  </v-app>
+</div>
+
+<!-- Vue + Vuetify -->
+<script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/vuetify@2.6.15/dist/vuetify.min.js"></script>
+
+<!-- Script separado -->
+<script src="js/home.js"></script>
+
+</body>
+</html>

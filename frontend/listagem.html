@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Listagem de Usuários</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Vuetify CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/vuetify@2.6.15/dist/vuetify.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/@mdi/font@5.x/css/materialdesignicons.min.css" rel="stylesheet">
+
+  <!-- CSS externo personalizado -->
+  <link rel="stylesheet" href="css/listagem.css">
+</head>
+<body>
+
+<div id="app">
+  <v-app>
+    <!-- Barra superior -->
+    <v-app-bar app color="blue darken-3" dark>
+      <v-app-bar-nav-icon @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
+      <v-toolbar-title>Dashboard</v-toolbar-title>
+    </v-app-bar>
+
+    <!-- Drawer lateral -->
+    <v-navigation-drawer app v-model="drawer" color="blue darken-3" dark>
+      <v-list dense>
+        <v-list-item>
+          <v-list-item-content>
+            <v-list-item-title class="title white--text font-weight-bold text-h6">
+              Systock
+            </v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
+
+        <v-divider class="white"></v-divider>
+
+        <v-list-item link @click="goTo('home.html')" class="pa-3">
+          <v-list-item-icon><v-icon class="mr-3">mdi-home</v-icon></v-list-item-icon>
+          <v-list-item-title>Home</v-list-item-title>
+        </v-list-item>
+
+        <v-list-item link @click="goTo('listagem.html')" class="pa-3">
+          <v-list-item-icon><v-icon class="mr-3">mdi-format-list-bulleted</v-icon></v-list-item-icon>
+          <v-list-item-title>Listagem</v-list-item-title>
+        </v-list-item>
+
+        <v-list-item link @click="goTo('users.html')" class="pa-3">
+          <v-list-item-icon><v-icon class="mr-3">mdi-account-plus</v-icon></v-list-item-icon>
+          <v-list-item-title>Cadastro</v-list-item-title>
+        </v-list-item>
+      </v-list>
+
+      <v-spacer></v-spacer>
+      <v-divider class="white"></v-divider>
+      <v-list-item class="pa-3">
+        <v-list-item-content>
+          <v-list-item-title class="white--text text-caption">© 2025 Crud Systock</v-list-item-title>
+        </v-list-item-content>
+      </v-list-item>
+    </v-navigation-drawer>
+
+    <!-- Conteúdo principal -->
+    <v-main>
+      <v-container class="mt-10" max-width="1000" style="margin: auto;">
+        <v-card class="elevation-3 pa-6 rounded-xl mt-10">
+            <v-card-title class="text-h5 font-weight-bold mb-2">
+                <v-icon left color="primary" class="mr-2">mdi-account-group</v-icon>
+                Usuários Cadastrados
+            </v-card-title>
+
+            <v-divider class="mb-4"></v-divider>
+
+            <v-data-table
+                :headers="headers"
+                :items="users"
+                item-value="id"
+                dense
+                class="elevation-1 rounded-lg"
+                :items-per-page="5"
+                :footer-props="{ 'items-per-page-options': [5, 10, 20], showFirstLastPage: true }"
+            >
+                <template v-slot:item.actions="{ item }">
+                <v-icon small class="mr-2" color="info" @click="viewUser(item)">mdi-eye</v-icon>
+                <v-icon small class="mr-2" color="primary" @click="editUser(item)">mdi-pencil</v-icon>
+                <v-icon small color="red" @click="confirmarExclusao(item)">mdi-delete</v-icon>
+                </template>
+            </v-data-table>
+            </v-card>
+
+
+        <!-- Snackbar -->
+        <v-snackbar v-model="snackbar" top right color="success">
+          {{ snackbarMessage }}
+        </v-snackbar>
+
+        <!-- MODAL VISUALIZAR -->
+        <v-dialog v-model="dialogVisualizar" max-width="500px">
+          <v-card>
+            <v-card-title class="white--text" style="background-color: #1976D2;">
+              <v-icon left class="mr-2 white--text">mdi-account</v-icon>
+              <span class="headline">Detalhes do Usuário</span>
+            </v-card-title>
+            <v-card-text class="pa-4">
+              <v-row class="mb-2">
+                <v-col cols="12"><strong>Nome:</strong> {{ userSelecionado.name }}</v-col>
+                <v-col cols="12"><strong>CPF:</strong> {{ userSelecionado.cpf }}</v-col>
+                <v-col cols="12"><strong>Email:</strong> {{ userSelecionado.email }}</v-col>
+              </v-row>
+            </v-card-text>
+            <v-card-actions>
+              <v-spacer></v-spacer>
+              <v-btn color="primary" dark @click="dialogVisualizar = false">Fechar</v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
+
+        <!-- MODAL EDITAR -->
+        <v-dialog v-model="dialogEditar" max-width="500px">
+          <v-card>
+            <v-card-title class="white--text" style="background-color: #1976D2;">
+              <v-icon left class="mr-2 white--text">mdi-pencil</v-icon>
+              <span class="headline">Editar Usuário</span>
+            </v-card-title>
+            <v-card-text>
+              <v-form ref="formEditar" v-model="valid" lazy-validation>
+                <v-text-field label="Nome" v-model="userEdit.name" :rules="[v => !!v || 'Nome obrigatório']" required></v-text-field>
+                <v-text-field label="CPF" v-model="userEdit.cpf" :rules="[v => !!v || 'CPF obrigatório']" required></v-text-field>
+                <v-text-field label="Email" v-model="userEdit.email" :rules="[v => /.+@.+\\..+/.test(v) || 'Email inválido']" required></v-text-field>
+              </v-form>
+            </v-card-text>
+            <v-card-actions>
+              <v-spacer></v-spacer>
+              <v-btn color="grey" text @click="dialogEditar = false">Cancelar</v-btn>
+              <v-btn color="primary" @click="salvarEdicao">Salvar</v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
+
+        <!-- MODAL EXCLUIR -->
+        <v-dialog v-model="dialogExcluir" max-width="500px">
+          <v-card>
+            <v-card-title class="headline red--text">
+              <v-icon left color="red" class="mr-2">mdi-alert</v-icon>
+              Confirmação
+            </v-card-title>
+            <v-card-text>
+              Tem certeza que deseja excluir o usuário: <strong>{{ userParaExcluir?.name }}</strong>?
+            </v-card-text>
+            <v-card-actions>
+              <v-spacer></v-spacer>
+              <v-btn color="grey" text @click="dialogExcluir = false">Cancelar</v-btn>
+              <v-btn color="red" dark @click="excluirUsuarioConfirmado">Excluir</v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
+      </v-container>
+    </v-main>
+  </v-app>
+</div>
+
+<!-- Vue + Vuetify + Axios -->
+<script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/vuetify@2.6.15/dist/vuetify.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+<script src="js/listagem.js"></script>
+
+</body>
+</html>

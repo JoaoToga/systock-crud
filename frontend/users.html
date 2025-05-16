@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Cadastro de Usuário</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Vuetify CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/vuetify@2.6.15/dist/vuetify.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/@mdi/font@5.x/css/materialdesignicons.min.css" rel="stylesheet">
+</head>
+<body>
+
+<div id="app">
+  <v-app>
+    <!-- Barra superior -->
+    <v-app-bar app color="blue darken-3" dark>
+      <v-app-bar-nav-icon @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
+      <v-toolbar-title>Dashboard</v-toolbar-title>
+    </v-app-bar>
+
+    <!-- Menu lateral -->
+    <v-navigation-drawer app v-model="drawer" color="blue darken-3" dark>
+      <v-list dense>
+        <v-list-item>
+          <v-list-item-content>
+            <v-list-item-title class="title white--text font-weight-bold text-h6">Systock</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
+
+        <v-divider class="white"></v-divider>
+
+        <v-list-item link @click="goTo('home.html')" class="pa-3">
+          <v-list-item-icon><v-icon class="mr-3">mdi-home</v-icon></v-list-item-icon>
+          <v-list-item-title>Home</v-list-item-title>
+        </v-list-item>
+
+        <v-list-item link @click="goTo('listagem.html')" class="pa-3">
+          <v-list-item-icon><v-icon class="mr-3">mdi-format-list-bulleted</v-icon></v-list-item-icon>
+          <v-list-item-title>Listagem</v-list-item-title>
+        </v-list-item>
+
+        <v-list-item link @click="goTo('users.html')" class="pa-3">
+          <v-list-item-icon><v-icon class="mr-3">mdi-account-plus</v-icon></v-list-item-icon>
+          <v-list-item-title>Cadastro</v-list-item-title>
+        </v-list-item>
+      </v-list>
+
+      <v-spacer></v-spacer>
+      <v-divider class="white"></v-divider>
+      <v-list-item class="pa-3">
+        <v-list-item-content>
+          <v-list-item-title class="white--text text-caption">© 2025 Crud Systock</v-list-item-title>
+        </v-list-item-content>
+      </v-list-item>
+    </v-navigation-drawer>
+
+    <!-- Conteúdo principal com o formulário -->
+    <v-main>
+      <v-container class="fill-height d-flex align-center justify-center">
+        <v-card class="pa-6 elevation-3 rounded-xl" max-width="600" width="100%">
+          <v-card-title class="headline font-weight-bold mb-4 d-flex align-center">
+            <v-icon color="primary" class="mr-2">mdi-account-plus</v-icon>
+            Cadastro de Usuário
+          </v-card-title>
+
+          <v-divider class="mb-4"></v-divider>
+
+          <v-form ref="form" v-model="valid" lazy-validation>
+            <v-text-field
+              label="Nome"
+              v-model="user.name"
+              :rules="[v => !!v || 'Nome obrigatório']"
+              solo
+              dense
+              required
+            ></v-text-field>
+
+            <v-text-field
+              label="CPF"
+              v-model="user.cpf"
+              :rules="[v => !!v || 'CPF obrigatório']"
+              solo
+              dense
+              required
+            ></v-text-field>
+
+            <v-text-field
+              label="Email"
+              v-model="user.email"
+              :rules="[v => /.+@.+\..+/.test(v) || 'Email inválido']"
+              solo
+              dense
+              required
+            ></v-text-field>
+
+            <v-text-field
+              label="Senha"
+              v-model="user.password"
+              type="password"
+              :rules="[v => v.length >= 6 || 'Mínimo 6 caracteres']"
+              solo
+              dense
+              required
+            ></v-text-field>
+
+            <v-btn color="primary" class="mt-4" block @click="submitForm">
+              Cadastrar
+            </v-btn>
+          </v-form>
+        </v-card>
+
+        <!-- Snackbar -->
+        <v-snackbar v-model="snackbar" top right color="success">
+          {{ snackbarMessage }}
+        </v-snackbar>
+      </v-container>
+    </v-main>
+
+  </v-app>
+</div>
+
+<!-- Vue + Vuetify + Axios -->
+<script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/vuetify@2.6.15/dist/vuetify.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+<!-- Script Vue -->
+<script>
+  const api = axios.create({
+    baseURL: 'http://127.0.0.1:8000/api', // ajuste conforme seu back-end Laravel
+  });
+
+  new Vue({
+    el: '#app',
+    vuetify: new Vuetify(),
+    data: () => ({
+      drawer: true,
+      valid: true,
+      snackbar: false,
+      snackbarMessage: '',
+      user: {
+        name: '',
+        cpf: '',
+        email: '',
+        password: ''
+      }
+    }),
+    methods: {
+      goTo(page) {
+        window.location.href = page;
+      },
+      submitForm() {
+        if (this.$refs.form.validate()) {
+          api.post('/users', this.user)
+            .then(() => {
+              this.snackbarMessage = 'Usuário cadastrado com sucesso!';
+              this.snackbar = true;
+              this.resetForm();
+            })
+            .catch(error => {
+              console.error('Erro ao cadastrar usuário:', error);
+              alert('Erro ao cadastrar usuário. Verifique os dados.');
+            });
+        }
+      },
+      resetForm() {
+        this.user = {
+          name: '',
+          cpf: '',
+          email: '',
+          password: ''
+        };
+        this.$refs.form.reset();
+      }
+    }
+  });
+</script>
+</body>
+</html>

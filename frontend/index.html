@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Systock Login</title>
+
+  <link rel="icon" href="favicon.ico" />
+  <meta name="theme-color" content="#1976d2" />
+
+  <!-- Vuetify CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/vuetify@2.6.15/dist/vuetify.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+
+<body>
+  <div id="app">
+    <v-app>
+      <!-- Notificações -->
+      <v-snackbar v-model="successSnackbar" :timeout="3000" color="success" top right>
+        <v-icon left>mdi-check-circle</v-icon>
+        {{ successMessage }}
+      </v-snackbar>
+
+      <v-snackbar v-model="errorSnackbar" :timeout="3000" color="error" top right>
+        {{ errorMessage }}
+      </v-snackbar>
+
+      <!-- Tela de login com banner -->
+      <v-container fluid class="d-flex justify-center align-center fill-height login-bg">
+        <v-row justify="center" align="center">
+          <v-col cols="12" sm="8" md="4">
+            <v-card elevation="12" class="rounded-xl overflow-hidden">
+              <!-- Banner -->
+              <v-img
+                src="img/systock_cover.jpeg"
+                height="180px"
+                class="banner-top"
+                cover
+              ></v-img>
+
+              <!-- Formulário -->
+              <v-card-text class="pa-5">
+                <h2 class="text-center font-weight-bold mb-5">Systock</h2>
+
+                <v-form @submit.prevent="login">
+                  <v-text-field
+                    v-model="form.email"
+                    :rules="emailRules"
+                    label="Email"
+                    outlined
+                    dense
+                    required
+                  ></v-text-field>
+
+                  <v-text-field
+                    v-model="form.password"
+                    :rules="passwordRules"
+                    label="Senha"
+                    type="password"
+                    outlined
+                    dense
+                    required
+                  ></v-text-field>
+
+                  <v-btn type="submit" color="primary" block large>
+                    Entrar
+                  </v-btn>
+                </v-form>
+              </v-card-text>
+            </v-card>
+          </v-col>
+        </v-row>
+      </v-container>
+    </v-app>
+  </div>
+
+  <!-- Vue, Vuetify, Axios -->
+  <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vuetify@2.6.15/dist/vuetify.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <script src="js/login.js"></script>
+</body>
+</html>
