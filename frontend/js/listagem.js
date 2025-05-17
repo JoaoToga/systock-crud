@@ -22,7 +22,7 @@ new Vue({
     dialogExcluir: false,
     userSelecionado: { name: '', cpf: '', email: '' },
     userEdit: { id: null, name: '', cpf: '', email: '' },
-    userParaExcluir: null,
+    userExcluir: null,
   }),
   mounted() {
     this.getUsers();
@@ -62,12 +62,12 @@ new Vue({
       }
     },
     confirmarExclusao(user) {
-      this.userParaExcluir = user;
+      this.userExcluir = user;
       this.dialogExcluir = true;
     },
     async excluirUsuarioConfirmado() {
       try {
-        await api.delete(`/users/${this.userParaExcluir.id}`);
+        await api.delete(`/users/${this.userExcluir.id}`);
         this.snackbarMessage = 'Usuário excluído com sucesso!';
         this.snackbar = true;
         this.getUsers();
@@ -76,7 +76,7 @@ new Vue({
         alert('Erro ao excluir usuário');
       } finally {
         this.dialogExcluir = false;
-        this.userParaExcluir = null;
+        this.userExcluir = null;
       }
     }
   }

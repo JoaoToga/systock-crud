@@ -67,7 +67,7 @@ A API estará disponível em:
 Com Python instalado, suba em um servidor local:
 
 ```bash
-cd public #Pasta onde esta o projeto
+cd systock/frontend #Pasta onde esta o projeto
 python -m http.server 5500
 ```
 
